@@ -9,10 +9,13 @@ import com.atguigu.daijia.customer.mapper.CustomerLoginLogMapper;
 import com.atguigu.daijia.customer.service.CustomerInfoService;
 import com.atguigu.daijia.model.entity.customer.CustomerInfo;
 import com.atguigu.daijia.model.entity.customer.CustomerLoginLog;
+import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,5 +57,18 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         loginLog.setMsg("小程序登录");
         customerLoginLogMapper.insert(loginLog);
         return customerInfo.getId();
+    }
+
+    @Override
+    public CustomerLoginVo getCustomerLoginInfo(Long customerId) {
+        CustomerInfo info = this.getById(customerId);
+        if (info == null) {
+            throw new GuiguException(ResultCodeEnum.DATA_ERROR);
+        }
+        CustomerLoginVo customerLoginVo = new CustomerLoginVo();
+        BeanUtils.copyProperties(info, customerLoginVo);
+        // 判断是否绑定了手机号，没绑定，发起绑定
+        customerLoginVo.setIsBindPhone(StringUtils.isNotBlank(info.getPhone()));
+        return customerLoginVo;
     }
 }
