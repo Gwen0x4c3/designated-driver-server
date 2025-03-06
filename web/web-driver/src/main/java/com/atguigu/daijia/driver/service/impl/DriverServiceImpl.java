@@ -26,7 +26,7 @@ public class DriverServiceImpl implements DriverService {
     public String login(String code) {
         Long userId = driverInfoFeignClient.login(code).getData();
         String token = UUID.randomUUID().toString().replace("-", "");
-        redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_KEY_PREFIX + token, userId, RedisConstant.USER_LOGIN_KEY_TIMEOUT, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_KEY_PREFIX + token, String.valueOf(userId), RedisConstant.USER_LOGIN_KEY_TIMEOUT, TimeUnit.SECONDS);
         return token;
     }
 
