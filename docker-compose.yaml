@@ -1,6 +1,7 @@
+version: "3"
 services:
   mysql:
-    image: mysql:8.0.32
+    image: "mysql:8.0.32"
     container_name: mysql
     ports:
       - "3306:3306"
@@ -8,3 +9,43 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     volumes:
       - ./data/mysql:/var/lib/mysql
+
+  rabbitmq:
+    image: "rabbitmq:3.12.0-management"
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./data/rabbitmq:/plugins
+    entrypoint: ["/bin/sh", "-c", "cd /plugins && rabbitmq-plugins enable rabbitmq_delayed_message_exchange"]
+
+  redis:
+    image: "redis:6.2.5"
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  nacos:
+    image: "nacos/nacos-server:v2.1.1"
+    container_name: nacos
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    environment:
+      - MODE=standalone
+
+  minio:
+    image: "minio/minio"
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin123456
+    volumes:
+      - ./data/minio:/data
+      - ./config/minio:/root/.minio
+    command: server /data --console-address ":9001"
