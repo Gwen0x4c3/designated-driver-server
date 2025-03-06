@@ -2,6 +2,7 @@ package com.atguigu.daijia.customer.service.impl;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import com.atguigu.daijia.common.execption.GuiguException;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.customer.mapper.CustomerInfoMapper;
@@ -9,11 +10,13 @@ import com.atguigu.daijia.customer.mapper.CustomerLoginLogMapper;
 import com.atguigu.daijia.customer.service.CustomerInfoService;
 import com.atguigu.daijia.model.entity.customer.CustomerInfo;
 import com.atguigu.daijia.model.entity.customer.CustomerLoginLog;
+import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -70,5 +73,19 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         // 判断是否绑定了手机号，没绑定，发起绑定
         customerLoginVo.setIsBindPhone(StringUtils.isNotBlank(info.getPhone()));
         return customerLoginVo;
+    }
+
+    @SneakyThrows
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Boolean updateWxPhoneNumber(UpdateWxPhoneForm updateWxPhoneForm) {
+        WxMaPhoneNumberInfo phoneNumberInfo = wxMaService.getUserService().getPhoneNoInfo(updateWxPhoneForm.getCode());
+        String phoneNumber = phoneNumberInfo.getPhoneNumber();
+        log.info("【更新微信手机号】phoneNumber={}", phoneNumber);
+
+        CustomerInfo customerInfo = new CustomerInfo();
+        customerInfo.setId(updateWxPhoneForm.getCustomerId());
+        customerInfo.setPhone(phoneNumber);
+        return this.updateById(customerInfo);
     }
 }

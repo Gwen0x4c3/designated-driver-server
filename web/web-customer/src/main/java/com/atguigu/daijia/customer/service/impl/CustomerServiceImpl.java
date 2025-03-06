@@ -2,10 +2,10 @@ package com.atguigu.daijia.customer.service.impl;
 
 import com.atguigu.daijia.common.constant.RedisConstant;
 import com.atguigu.daijia.common.execption.GuiguException;
-import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.customer.client.CustomerInfoFeignClient;
 import com.atguigu.daijia.customer.service.CustomerService;
+import com.atguigu.daijia.model.form.customer.UpdateWxPhoneForm;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -28,14 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public String wxLogin(String code) {
         // 获取 openid
-        Result<Long> result = customerInfoFeignClient.login(code);
-        if (result.getCode().intValue() != ResultCodeEnum.SUCCESS.getCode()) {
-            throw new GuiguException(result.getCode(), result.getMessage());
-        }
-        Long customerId = result.getData();
-        if (customerId == null) {
-            throw new GuiguException(ResultCodeEnum.DATA_ERROR);
-        }
+        Long customerId = customerInfoFeignClient.login(code).getData();
         String token = UUID.randomUUID().toString().replace("-", "");
         redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_KEY_PREFIX + token, customerId.toString(), RedisConstant.USER_LOGIN_KEY_TIMEOUT, TimeUnit.SECONDS);
         return token;
@@ -46,14 +39,11 @@ public class CustomerServiceImpl implements CustomerService {
         if (customerId == null) {
             throw new GuiguException(ResultCodeEnum.DATA_ERROR);
         }
-        Result<CustomerLoginVo> result = customerInfoFeignClient.getCustomerLoginInfo(customerId);
-        if (result.getCode().intValue() != ResultCodeEnum.SUCCESS.getCode()) {
-            throw new GuiguException(result.getCode(), result.getMessage());
-        }
-        CustomerLoginVo data = result.getData();
-        if (data == null) {
-            throw new GuiguException(ResultCodeEnum.DATA_ERROR);
-        }
-        return data;
+        return customerInfoFeignClient.getCustomerLoginInfo(customerId).getData();
+    }
+
+    @Override
+    public Boolean updateWxPhoneNumber(UpdateWxPhoneForm updateWxPhoneForm) {
+        return customerInfoFeignClient.updateWxPhoneNumber(updateWxPhoneForm).getData();
     }
 }
