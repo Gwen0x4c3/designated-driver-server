@@ -1,5 +1,6 @@
 package com.atguigu.daijia.common.login;
 
+import com.atguigu.daijia.common.constant.RedisConstant;
 import com.atguigu.daijia.common.execption.GuiguException;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
 import com.atguigu.daijia.common.util.AuthContextHolder;
@@ -36,6 +37,7 @@ public class GuiguLoginAspect {
      */
     @Around("execution(* com.atguigu.daijia.*.controller.*.*(..)) && @annotation(guiguLogin)")
     public Object process(ProceedingJoinPoint joinPoint, GuiguLogin guiguLogin) throws Throwable {
+        log.info("开始执行登录校验...");
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
         HttpServletRequest request = servletRequestAttributes.getRequest();
@@ -44,7 +46,7 @@ public class GuiguLoginAspect {
         if (StringUtils.isBlank(token)) {
             throw new GuiguException(ResultCodeEnum.LOGIN_AUTH);
         }
-        String userId = (String) redisTemplate.opsForValue().get(token);
+        String userId = (String) redisTemplate.opsForValue().get(RedisConstant.USER_LOGIN_KEY_PREFIX + token);
         if (userId != null) {
             AuthContextHolder.setUserId(Long.parseLong(userId));
         }

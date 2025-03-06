@@ -1,5 +1,6 @@
 package com.atguigu.daijia.customer.controller;
 
+import com.atguigu.daijia.common.login.GuiguLogin;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.customer.service.CustomerService;
@@ -8,7 +9,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @Tag(name = "客户API接口管理")
@@ -27,8 +31,9 @@ public class CustomerController {
     }
 
     @Operation(summary = "获取客户登录信息")
+    @GuiguLogin
     @GetMapping("/getCustomerLoginInfo")
-    public Result<CustomerLoginVo> getCustomerLoginInfo(@RequestHeader(value = "token") String token) {
+    public Result<CustomerLoginVo> getCustomerLoginInfo() {
         Long userId = AuthContextHolder.getUserId();
         return Result.ok(customerService.getCustomerLoginInfo(userId));
     }
