@@ -42,12 +42,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerLoginVo getCustomerLoginInfo(Long userId) {
-        if (userId == null) {
+    public CustomerLoginVo getCustomerLoginInfo(Long customerId) {
+        if (customerId == null) {
             throw new GuiguException(ResultCodeEnum.DATA_ERROR);
         }
-        String customerId = (String) redisTemplate.opsForValue().get(RedisConstant.USER_LOGIN_KEY_PREFIX + token);
-        Result<CustomerLoginVo> result = customerInfoFeignClient.getCustomerLoginInfo(Long.parseLong(customerId));
+        Result<CustomerLoginVo> result = customerInfoFeignClient.getCustomerLoginInfo(customerId);
         if (result.getCode().intValue() != ResultCodeEnum.SUCCESS.getCode()) {
             throw new GuiguException(result.getCode(), result.getMessage());
         }
