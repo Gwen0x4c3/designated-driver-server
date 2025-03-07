@@ -1,6 +1,7 @@
 package com.atguigu.daijia.driver.service;
 
 import com.atguigu.daijia.model.entity.driver.DriverInfo;
+import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -30,4 +31,12 @@ public interface DriverInfoService extends IService<DriverInfo> {
      * @return
      */
     DriverAuthInfoVo getDriverAuthInfo(Long driverId);
+
+    /**
+     * 更新司机认证信息
+     *
+     * @param form
+     * @return
+     */
+    Boolean updateDriverAuthInfo(UpdateDriverAuthInfoForm form);
 }
