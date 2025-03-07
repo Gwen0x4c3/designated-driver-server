@@ -17,8 +17,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     volumes:
-      - ./data/rabbitmq:/plugins
-    entrypoint: ["/bin/sh", "-c", "cd /plugins && rabbitmq-plugins enable rabbitmq_delayed_message_exchange"]
+      - ./data/rabbitmq/plugins:/plugins
+    # entrypoint: [ "/bin/sh", "-c", "cd /plugins && rabbitmq-plugins enable rabbitmq_delayed_message_exchange" ]
 
   redis:
     image: "redis:6.2.5"
@@ -49,3 +49,12 @@ services:
       - ./data/minio:/data
       - ./config/minio:/root/.minio
     command: server /data --console-address ":9001"
+
+  mongodb:
+    image: "mongodb/mongodb-community-server:latest"
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongodb:/data/db
+      - ./config/mongodb:/data/config
