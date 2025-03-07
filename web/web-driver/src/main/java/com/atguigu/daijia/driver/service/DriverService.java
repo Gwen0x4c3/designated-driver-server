@@ -1,5 +1,6 @@
 package com.atguigu.daijia.driver.service;
 
+import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 
 public interface DriverService {
@@ -19,4 +20,13 @@ public interface DriverService {
      * @return
      */
     DriverLoginVo getDriverLoginInfo(Long driverId);
+
+    /**
+     * 获取司机认证信息
+     *
+     * @param driverId
+     * @return
+     */
+    DriverAuthInfoVo getDriverAuthInfo(Long driverId);
+
 }

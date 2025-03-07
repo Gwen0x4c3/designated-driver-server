@@ -6,11 +6,13 @@ import feign.FeignException;
 import feign.Response;
 import feign.codec.DecodeException;
 import feign.codec.Decoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+@Slf4j
 public class FeignCustomDataDecoder implements Decoder {
 
     private final SpringDecoder decoder;
@@ -28,6 +30,7 @@ public class FeignCustomDataDecoder implements Decoder {
         if (object instanceof Result<?>) {
             Result<?> result = (Result<?>) object;
             if (result.getCode().intValue() != ResultCodeEnum.SUCCESS.getCode().intValue()) {
+                log.error(result.getMessage());
                 throw new DecodeException(result.getCode(), result.getMessage(), response.request());//"数据解析失败"
             }
             //远程调用必须有返回值，具体调用中不用判断result.getData() == null，这里统一处理
